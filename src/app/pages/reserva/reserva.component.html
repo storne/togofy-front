@@ -1,13 +1,14 @@
 <button class="btn btn-outline-info" (click)="openModal()">Agregar Reserva</button>
 <ul class="list-group">
     <li class="list-group-item" *ngFor="let reserva of reservas">
-        Sala: {{reserva.sala_id}}<br>
+        Sala: {{reserva.sala.nombre}}<br>
         Motivo: {{reserva.motivo}}<br>
         Fecha: {{reserva.fecha}}<br>
         Hora de entrada: {{reserva.hora_inicio}} - 
         Hora de salida: {{reserva.hora_fin}} <br>
         Servicios:{{reserva.servicios}}<br>
-        <button class="btn btn-outline-danger" (click)="eliminarReserva(reserva.id)">Eliminar Reserva</button>
+        <button class="btn btn-outline-warning" (click)="editarReserva(reserva.id)"><i class="fa fa-edit"></i></button>
+        <button class="btn btn-outline-danger" (click)="eliminarReserva(reserva.id)"><i class="fa fa-trash"></i></button>
     </li>
 </ul>
 
@@ -21,25 +22,37 @@
           </button>
         </div>
         <div class="modal-body">
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label>Motivo:</label><br>
+                    <input type="text" class="form-control" [(ngModel)]="body.motivo">
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label>Fecha:</label><br>
+                    <input type="text" class="form-control datetimepicker" [(ngModel)]="fechaTmp">
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label>Hora Inicio:</label><br>
+                    <input type="text" class="form-control entrada " placeholder="Hora de entrada" [(ngModel)]="body.hora_inicio"/>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Hora Fin:</label><br>
+                    <input type="text" class="form-control salida " placeholder="Hora de entrada" [(ngModel)]="body.hora_fin">
+                </div>
+            </div>
+           
             <div class="form-group col-md-12">
-                <label>Motivo:</label><br>
-                <input type="text" class="form-control" [(ngModel)]="body.motivo">
-            </div>
-            <div class="form-group col-md-12">
-                <label>Fecha:</label><br>
-                <input type="text" class="form-control datetimepicker" [(ngModel)]="body.fecha">
-            </div>
-            <div class="form-group col-md-6">
-                <label>Hora Inicio:</label><br>
-                <input type="text" class="form-control entrada " placeholder="Hora de entrada" [(ngModel)]="body.hora_inicio"/>
-            </div>
-            <div class="form-group col-md-6">
-                <label>Hora Fin:</label><br>
-                <input type="text" class="form-control salida " placeholder="Hora de entrada" [(ngModel)]="body.hora_fin">
-            </div>
-            <div class="form-group col-md-6">
                 <label>Sala:</label><br>
-                <input type="text" class="form-control" [(ngModel)]="body.sala_id">
+                <select [(ngModel)]="body.sala_id" class="form-control">
+                    <option [value]="item.id" *ngFor="let item of items">{{item.nombre}}</option>
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label>Agregar Catering:</label><br>
+                <input type="checkbox" (change)="register($event)" class="checkbox">
             </div>
         </div>
         <div class="modal-footer">

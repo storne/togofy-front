@@ -64,9 +64,6 @@ export class HomeComponent implements OnInit {
 
   }
 
-  public reservarSala(){
-
-  }
 
   public eliminarSala(id){
     if(confirm('Desea eliminar esta sala?')){

@@ -23,12 +23,22 @@ declare interface reserva{
 export class ReservaComponent implements OnInit {
 
   constructor(private http: HttpService, private router: Router, private alert: AlertService, private _route: ActivatedRoute) { }
-  reservas: any = [];
+  reservas : any = [];
+  items : any = [];
   body : reserva;
-  
+  horaInicio : string;
+  horaFin : string;
+  fechaTmp : string;
+
   ngOnInit(): void {
 
     this.obtenerReservas();
+
+    this.http.getHttp("salas")
+    .subscribe(data => {
+        console.log('salas >',data);
+        this.items = data.data;
+    });
 
     $('.entrada').datetimepicker({
       format: 'LT',
@@ -58,7 +68,7 @@ export class ReservaComponent implements OnInit {
         close: 'fa fa-remove'
       }
     });
-    
+
     $('.datetimepicker').datetimepicker({
         icons: {
             time: "fa fa-clock-o",
@@ -96,6 +106,13 @@ export class ReservaComponent implements OnInit {
     
   } 
 
+  register(e){
+    this.body.servicios = null;
+    if(e.target.checked){
+      this.body.servicios = "Contratar servicio de catering";
+    }
+    
+  }
   openModal(){
     $('#newReserva').modal('show').fadeIn(500);
   }
@@ -104,18 +121,43 @@ export class ReservaComponent implements OnInit {
     $('#newReserva').modal('hide').fadeOut(500);
   }
 
+  
+
   public agregarReserva(){
 
+    this.body.fecha =  moment(this.fechaTmp).format("YYYY-MM-DD");
+    this.body.hora_inicio =  moment($('.entrada').data("DateTimePicker").viewDate()).format("HH")+":"+moment($('.entrada').data("DateTimePicker").viewDate()).format("mm");
+    this.body.hora_fin =  moment($('.salida').data("DateTimePicker").viewDate()).format("HH")+":"+moment($('.salida').data("DateTimePicker").viewDate()).format("mm");
     console.log(this.body);
 
     
-    /*this.http.postHttp("reservas/",this.body)
+    this.http.postHttp("reservas/",this.body)
     .subscribe(data => {
         console.log(data);
+        if(data.data==true){
+          this.alert.alertify("top",'right','pe-7s-check', 'La sala se encuentra ocupada', 'danger');
+        }
+        else{
+          this.alert.alertify("top",'right','pe-7s-check', 'Sala reservada', 'success');
+        }
         this.closeModal();
-        this.obtenerSalas();
-    });*/
+        this.obtenerReservas();
+    });
 
   }
+
+  public eliminarReserva(id){
+    if(confirm('Desea eliminar esta reserva?')){
+    
+      this.http.deleteHttp("reservas/"+id)
+      .subscribe(data => {
+          console.log(data);
+          this.alert.alertify("top",'right','pe-7s-check', 'Reserva Eliminada', 'success');
+          this.obtenerReservas();
+      });
+    }
+  
+  }
+
 
 }
