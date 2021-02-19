@@ -1,0 +1,47 @@
+<button class="btn btn-primary" (click)="openModal()">Agregar Sala</button>
+<div class="col-md-12">
+
+    <div class="row">
+        
+        <div class="col-md-3" *ngFor="let item of items">
+
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                  <h5 class="card-title">{{item.id}}. {{item.nombre}}</h5>
+                  <h6 class="card-subtitle mb-2 text-muted"></h6>
+                  <p class="card-text">{{item.descripcion}}</p>
+                  <button class="btn btn-danger" (click)="eliminarSala(item.id)"> <i class="fa fa-trash"></i></button>
+                </div>
+              </div>
+        </div>
+
+     </div>
+
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="newsala">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Agregar Sala</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group col-md-12">
+                <label>Nombre:</label><br>
+                <input type="text" class="form-control" [(ngModel)]="body.nombre">
+            </div>
+            <div class="form-group col-md-12">
+                <label>Descripcion:</label><br>
+                <input type="text" class="form-control" [(ngModel)]="body.descripcion">
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" (click)="agregarSala()">Guardar</button>
+        </div>
+      </div>
+    </div>
+</div>
