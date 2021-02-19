@@ -1,4 +1,4 @@
-<button class="btn btn-primary" (click)="openModal()">Agregar Sala</button>
+<button class="btn-outline-info btn" (click)="openModal()">Agregar Sala</button>
 <div class="col-md-12">
 
     <div class="row">
@@ -10,7 +10,7 @@
                   <h5 class="card-title">{{item.id}}. {{item.nombre}} </h5>
                   <h6 class="card-subtitle mb-2 text-muted"></h6>
                   <p class="card-text">{{item.descripcion}}</p>
-                  <p class="card-text">Reservas: {{item.reservas.length}}</p>
+                  <p class="card-text">Reservas: <span class="badge badge-success">{{item.reservas.length}}</span></p>
                   <button class="btn btn-danger" (click)="eliminarSala(item.id)"> <i class="fa fa-trash"></i></button>
                 </div>
               </div>

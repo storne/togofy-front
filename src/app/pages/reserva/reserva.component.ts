@@ -6,6 +6,7 @@ declare var $:any;
 import * as moment from 'moment';
 
 declare interface reserva{
+  id?:number,
   fecha: string,
   hora_inicio : string,
   hora_fin : string,
@@ -26,9 +27,12 @@ export class ReservaComponent implements OnInit {
   reservas : any = [];
   items : any = [];
   body : reserva;
+  edit : reserva;
   horaInicio : string;
   horaFin : string;
-  fechaTmp : string;
+  public fechaTmp : string;
+  public fechaTmp2 : string;
+  public showLoading : boolean = false;
 
   ngOnInit(): void {
 
@@ -69,6 +73,35 @@ export class ReservaComponent implements OnInit {
       }
     });
 
+    $('.entradaEdit').datetimepicker({
+      format: 'LT',
+      icons: {
+        time: "fa fa-clock-o",
+        date: "fa fa-calendar",
+        up: "fa fa-chevron-up",
+        down: "fa fa-chevron-down",
+        previous: 'fa fa-chevron-left',
+        next: 'fa fa-chevron-right',
+        today: 'fa fa-screenshot',
+        clear: 'fa fa-trash',
+        close: 'fa fa-remove'
+      }
+    });
+    $('.salidaEdit').datetimepicker({
+      format: 'LT',
+      icons: {
+        time: "fa fa-clock-o",
+        date: "fa fa-calendar",
+        up: "fa fa-chevron-up",
+        down: "fa fa-chevron-down",
+        previous: 'fa fa-chevron-left',
+        next: 'fa fa-chevron-right',
+        today: 'fa fa-screenshot',
+        clear: 'fa fa-trash',
+        close: 'fa fa-remove'
+      }
+    });
+
     $('.datetimepicker').datetimepicker({
         icons: {
             time: "fa fa-clock-o",
@@ -84,9 +117,32 @@ export class ReservaComponent implements OnInit {
         format: 'DD-MM-YYYY',
         locale: 'es'
     });
+    $('.datetimepickerEdit').datetimepicker({
+      icons: {
+          time: "fa fa-clock-o",
+          date: "fa fa-calendar",
+          up: "fa fa-chevron-up",
+          down: "fa fa-chevron-down",
+          previous: 'fa fa-chevron-left',
+          next: 'fa fa-chevron-right',
+          today: 'fa fa-screenshot',
+          clear: 'fa fa-trash',
+          close: 'fa fa-remove'
+      },
+      format: 'DD-MM-YYYY',
+      locale: 'es'
+  });
    
 
     this.body = {
+      fecha : null,
+      hora_inicio : null,
+      hora_fin : null,
+      motivo : null,
+      sala_id : null,
+      servicios : null,
+    }
+    this.edit = {
       fecha : null,
       hora_inicio : null,
       hora_fin : null,
@@ -98,10 +154,12 @@ export class ReservaComponent implements OnInit {
 
   }
   obtenerReservas(){
+    this.showLoading = true;
     this.http.getHttp("reservas/")
     .subscribe(data => {
         console.log('reservas >',data);
         this.reservas = data.data;
+        this.showLoading = false;
     });
     
   } 
@@ -113,10 +171,43 @@ export class ReservaComponent implements OnInit {
     }
     
   }
+
+  editCheckbox(e){
+    this.edit.servicios = null;
+    if(e.target.checked){
+      this.edit.servicios = "Contratar servicio de catering";
+    }
+    
+  }
   openModal(){
     $('#newReserva').modal('show').fadeIn(500);
   }
 
+  openEditModal(id){
+    this.http.getHttp("reservas/"+id)
+    .subscribe(data => {
+        console.log('editar Reserva >',data);
+        this.edit.motivo = data.data.motivo;
+        //this.edit.fecha = moment(data.data.fecha).format('DD-MM-YYYY');
+        //this.edit.hora_inicio = data.data.hora_inicio.slice(0, 5);
+        //this.edit.hora_fin = data.data.hora_fin.slice(0, 5);
+        this.edit.sala_id = data.data.sala_id;
+        this.edit.id = data.data.id;
+        console.log(this.edit);
+
+        
+        
+       // this.fechaTmp2 = moment(data.data.fecha).format('DD-MM-YYYY');
+       
+    });
+
+    
+
+    $('#editModal').modal('show').fadeIn(500);
+  }
+  closeEditModal(){
+    $('#editModal').modal('hide').fadeOut(500);
+  }
   closeModal(){
     $('#newReserva').modal('hide').fadeOut(500);
   }
@@ -146,6 +237,32 @@ export class ReservaComponent implements OnInit {
 
   }
 
+  public editarReserva(){
+
+    console.log(this.fechaTmp2);
+    this.showLoading = true;
+
+    this.edit.fecha =  moment(this.fechaTmp2).format("YYYY-MM-DD");
+    this.edit.hora_inicio =  moment($('.entradaEdit').data("DateTimePicker").viewDate()).format("HH")+":"+moment($('.entradaEdit').data("DateTimePicker").viewDate()).format("mm");
+    this.edit.hora_fin =  moment($('.salidaEdit').data("DateTimePicker").viewDate()).format("HH")+":"+moment($('.salidaEdit').data("DateTimePicker").viewDate()).format("mm");
+    
+    console.log('antes de editar reserva', this.edit);
+         
+    this.http.putHttp("reservas/"+this.edit.id,this.edit)
+    .subscribe(data => {
+        console.log(data);
+        if(data.data==true){
+          this.alert.alertify("top",'right','pe-7s-check', 'La sala se encuentra ocupada', 'danger');
+        }
+        else{
+          this.alert.alertify("top",'right','pe-7s-check', 'La reserva a sido actualizada', 'success');
+        }
+        this.closeEditModal();
+        this.obtenerReservas();
+          this.showLoading = true;
+    });
+
+  }
   public eliminarReserva(id){
     if(confirm('Desea eliminar esta reserva?')){
     
@@ -158,6 +275,7 @@ export class ReservaComponent implements OnInit {
     }
   
   }
+
 
 
 }

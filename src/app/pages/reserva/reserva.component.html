@@ -1,16 +1,21 @@
 <button class="btn btn-outline-info" (click)="openModal()">Agregar Reserva</button>
-<ul class="list-group">
-    <li class="list-group-item" *ngFor="let reserva of reservas">
-        Sala: {{reserva.sala.nombre}}<br>
-        Motivo: {{reserva.motivo}}<br>
-        Fecha: {{reserva.fecha}}<br>
-        Hora de entrada: {{reserva.hora_inicio}} - 
-        Hora de salida: {{reserva.hora_fin}} <br>
-        Servicios:{{reserva.servicios}}<br>
-        <button class="btn btn-outline-warning" (click)="editarReserva(reserva.id)"><i class="fa fa-edit"></i></button>
-        <button class="btn btn-outline-danger" (click)="eliminarReserva(reserva.id)"><i class="fa fa-trash"></i></button>
-    </li>
-</ul>
+<div *ngIf="showLoading">
+    <i class="fa fa-spin fa-spinner fa-2x" ></i> 
+</div> 
+<div *ngIf="!showLoading">
+    <ul class="list-group" >
+        <li class="list-group-item" *ngFor="let reserva of reservas" >
+            <h4> {{reserva.motivo}}</h4>
+            <h5>Sala: {{reserva.sala.nombre}}</h5>
+            <p>Fecha: {{reserva.fecha}}</p>
+            <p>Horario: {{reserva.hora_inicio}} - {{reserva.hora_fin}} </p>
+            <p>Servicios:{{reserva.servicios}}</p>
+            <button class="btn btn-outline-warning" (click)="openEditModal(reserva.id)"><i class="fa fa-edit"></i></button>
+            <button class="btn btn-outline-danger" (click)="eliminarReserva(reserva.id)"><i class="fa fa-trash"></i></button>
+        </li>
+    </ul>
+</div>
+
 
 <div class="modal" tabindex="-1" role="dialog" id="newReserva">
     <div class="modal-dialog" role="document">
@@ -40,7 +45,7 @@
                 </div>
                 <div class="form-group col-md-6">
                     <label>Hora Fin:</label><br>
-                    <input type="text" class="form-control salida " placeholder="Hora de entrada" [(ngModel)]="body.hora_fin">
+                    <input type="text" class="form-control salida " placeholder="Hora de Final" [(ngModel)]="body.hora_fin">
                 </div>
             </div>
            
@@ -58,6 +63,57 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button type="button" class="btn btn-primary" (click)="agregarReserva()">Guardar</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="editModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar Reserva</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label>Motivo:</label><br>
+                    <input type="text" class="form-control" [(ngModel)]="edit.motivo">
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label>Fecha:</label><br>
+                    <input type="text" class="form-control datetimepicker" [(ngModel)]="fechaTmp2">
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label>Hora Inicio:</label><br>
+                    <input type="text" class="form-control entradaEdit " placeholder="Hora de entrada" [(ngModel)]="edit.hora_inicio"/>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Hora Fin:</label><br>
+                    <input type="text" class="form-control salidaEdit " placeholder="Hora de Salida" [(ngModel)]="edit.hora_fin">
+                </div>
+            </div>
+           
+            <div class="form-group col-md-12">
+                <label>Sala:</label><br>
+                <select [(ngModel)]="edit.sala_id" class="form-control">
+                    <option [value]="item.id" *ngFor="let item of items">{{item.nombre}}</option>
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label>Agregar Catering:</label><br>
+                <input type="checkbox" (change)="editCheckbox($event)" class="checkbox">
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" (click)="editarReserva()">Guardar</button>
         </div>
       </div>
     </div>
